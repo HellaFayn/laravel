@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cacao;
+use DB;
 use Illuminate\Http\Request;
 
 class CacaoController
@@ -149,6 +150,28 @@ class CacaoController
                 'diseased' => $diseased
             ]
         ],200);
+    }
+
+    //Get Heatmap Data
+    public function getHeatMapData(string $filter){
+        $status = ['Black Pod Rot', 'Frosty Pod Rot'];
+        switch(strtoupper($filter)){
+            case 'BLACK POD ROT': $status = ['Black Pod Rot'];
+            break;
+            case 'FROSTY POD ROT': $status = ['Frosty Pod Rot'];
+            break;
+            default : ['Black Pod Rot', 'Frosty Pod Rot'];
+        }
+        $cacao = DB::table('cacaos')
+                    ->join('users', 'users.id', '=', 'cacaos.uploaderId')
+                    ->whereIn('label', $status)
+                    ->groupBy('users.barangay', 'users.city')
+                    ->select('users.barangay', 'users.city', DB::raw('COUNT(*) as count'))
+                    ->get();
+
+        return response()->json([
+            'data' => $cacao
+        ], 200);
     }
 
     //Delete
