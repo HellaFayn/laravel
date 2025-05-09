@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
             'region' => 'Region XI (Davao Region)',
             'province' => 'Davao del Sur',
             'city' => 'City of Davao',
-            'barangay' => 'Barangay 20B',
+            'barangay' => 'Mintal',
             'role' => 'admin',
             'created_at' => now(),
             'updated_at' => now(),
