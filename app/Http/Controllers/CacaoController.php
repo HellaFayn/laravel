@@ -46,14 +46,14 @@ class CacaoController
 
         if($request->username){
             $cacao = Cacao::select('cacaos.*', 'users.username', 'users.profile', 'users.city', 'users.barangay')
-                            ->join('users', 'users.uuid', '=', 'cacaos.uploaderId')
+                            ->join('users', 'users.id', '=', 'cacaos.uploaderId')
                             ->orderBy('cacaos.created_at', $order)
                             ->whereIn('cacaos.label', $status)
                             ->where('users.username', $request->username)
                             ->paginate(6);
         }else{
             $cacao = Cacao::select('cacaos.*', 'users.username', 'users.profile', 'users.city', 'users.barangay')
-                            ->join('users', 'users.uuid', '=', 'cacaos.uploaderId')
+                            ->join('users', 'users.id', '=', 'cacaos.uploaderId')
                             ->orderBy('cacaos.created_at', $order)
                             ->whereIn('cacaos.label', $status)
                             ->paginate(6);
@@ -84,14 +84,14 @@ class CacaoController
 
         if($request->username){
             $cacao = Cacao::select('cacaos.*', 'users.username', 'users.profile', 'users.city', 'users.barangay')
-                            ->join('users', 'users.uuid', '=', 'cacaos.uploaderId')
+                            ->join('users', 'users.id', '=', 'cacaos.uploaderId')
                             ->orderBy('cacaos.created_at', $order)
                             ->whereIn('cacaos.label', $status)
                             ->where('users.username', $request->username)
                             ->paginate(6);
         }else{
             $cacao = Cacao::select('cacaos.*', 'users.username', 'users.profile', 'users.city', 'users.barangay')
-                            ->join('users', 'users.uuid', '=', 'cacaos.uploaderId')
+                            ->join('users', 'users.id', '=', 'cacaos.uploaderId')
                             ->orderBy('cacaos.created_at', $order)
                             ->whereIn('cacaos.label', $status)
                             ->paginate(6);
@@ -132,7 +132,7 @@ class CacaoController
     //Get the highest count of disease within this week
     public function getHighestDiseaseWithinTheWeek(){
         $cacaoStats = Cacao::selectRaw('cacaos.label, users.city, COUNT(*) as count')
-                ->join('users', 'users.uuid', '=', 'cacaos.uploaderId')
+                ->join('users', 'users.id', '=', 'cacaos.uploaderId')
                 ->where('cacaos.created_at', '>=', now()->subDays(7))
                 ->where('cacaos.label', '!=', 'Healthy Pod')
                 ->groupBy('cacaos.label', 'users.city')
@@ -161,7 +161,7 @@ class CacaoController
     //getRecentPodScans
     public function getRecent(){
         $cacao = Cacao::select('cacaos.*', 'users.username', 'users.profile', 'users.city', 'users.barangay')
-                    ->join('users', 'users.uuid', '=', 'cacaos.uploaderId')
+                    ->join('users', 'users.id', '=', 'cacaos.uploaderId')
                     ->latest('cacaos.created_at')
                     ->limit(3)
                     ->get();
@@ -201,7 +201,7 @@ class CacaoController
             default : ['Black Pod Rot', 'Frosty Pod Rot'];
         }
         $cacao = DB::table('cacaos')
-                    ->join('users', 'users.uuid', '=', 'cacaos.uploaderId')
+                    ->join('users', 'users.id', '=', 'cacaos.uploaderId')
                     ->whereIn('label', $status)
                     ->groupBy('users.barangay', 'users.city')
                     ->select('users.barangay', 'users.city', DB::raw('COUNT(*) as count'))
