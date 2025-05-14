@@ -35,6 +35,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
     Route::get('cacao/status/count', [CacaoController::class, 'getStatusCount']);
     Route::get('cacao/disease/weeks', [CacaoController::class, 'getHighestDiseaseWithinTheWeek']);
     Route::get('cacao/upload/count/{id}', [CacaoController::class, 'getUploadCountByUser']);
+    Route::get('cacao/user/upload/{id}', [CacaoController::class, 'getCacaoUploadedByUser']);
     Route::get('cacao/feed/{order}/{filter}', [CacaoController::class, 'index']);
     Route::get('cacao/heatmap/{filter}', [CacaoController::class, 'getHeatMapData']);
 });

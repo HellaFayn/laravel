@@ -71,40 +71,22 @@ class CacaoController
 
     }
     //Cacaos that the user uploaded
-    public function getCacaoUploadedByUser(string $order, string $filter, Request $request)
+    public function getCacaoUploadedByUser(string $id)
     {
-        $status = ['Black Pod Rot', 'Frosty Pod Rot', 'Healthy Pod'];
-        switch(strtoupper($filter)){
-            case 'HEALTHY': $status = ['Healthy Pod'];
-            break;
-            case 'DISEASED': $status = ['Black Pod Rot', 'Frosty Pod Rot'];
-            break;
-            default : ['Black Pod Rot', 'Frosty Pod Rot', 'Healthy Pod'];
-        }
+        $cacao = Cacao::select('cacaos.*', 'users.username', 'users.profile', 'users.city', 'users.barangay')
+                        ->join('users', 'users.id', '=', 'cacaos.uploaderId')
+                        ->where('users.id', $id)
+                        ->get();
 
-        if($request->username){
-            $cacao = Cacao::select('cacaos.*', 'users.username', 'users.profile', 'users.city', 'users.barangay')
-                            ->join('users', 'users.id', '=', 'cacaos.uploaderId')
-                            ->orderBy('cacaos.created_at', $order)
-                            ->whereIn('cacaos.label', $status)
-                            ->where('users.username', $request->username)
-                            ->paginate(6);
-        }else{
-            $cacao = Cacao::select('cacaos.*', 'users.username', 'users.profile', 'users.city', 'users.barangay')
-                            ->join('users', 'users.id', '=', 'cacaos.uploaderId')
-                            ->orderBy('cacaos.created_at', $order)
-                            ->whereIn('cacaos.label', $status)
-                            ->paginate(6);
-        }
 
         return response()->json([
             'data' => $cacao,
-            'meta' => [
-                'current_page' => $cacao->currentPage(),
-                'total_pages' => $cacao->lastPage(),
-                'per_page' => $cacao->perPage(),
-                'total' => $cacao->total(),
-            ]
+            // 'meta' => [
+            //     'current_page' => $cacao->currentPage(),
+            //     'total_pages' => $cacao->lastPage(),
+            //     'per_page' => $cacao->perPage(),
+            //     'total' => $cacao->total(),
+            // ]
         ], 200);
 
     }
