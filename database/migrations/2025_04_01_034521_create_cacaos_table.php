@@ -22,7 +22,7 @@ return new class extends Migration
             $table->unsignedBigInteger('uploaderId');
             $table->timestamps();
 
-            $table->foreign('uploaderId')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('uploaderId')->references('uuid')->on('users')->onDelete('cascade');
         });
     }
 

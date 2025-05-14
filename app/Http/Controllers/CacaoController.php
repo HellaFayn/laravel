@@ -46,14 +46,52 @@ class CacaoController
 
         if($request->username){
             $cacao = Cacao::select('cacaos.*', 'users.username', 'users.profile', 'users.city', 'users.barangay')
-                            ->join('users', 'users.id', '=', 'cacaos.uploaderId')
+                            ->join('users', 'users.uuid', '=', 'cacaos.uploaderId')
                             ->orderBy('cacaos.created_at', $order)
                             ->whereIn('cacaos.label', $status)
                             ->where('users.username', $request->username)
                             ->paginate(6);
         }else{
             $cacao = Cacao::select('cacaos.*', 'users.username', 'users.profile', 'users.city', 'users.barangay')
-                            ->join('users', 'users.id', '=', 'cacaos.uploaderId')
+                            ->join('users', 'users.uuid', '=', 'cacaos.uploaderId')
+                            ->orderBy('cacaos.created_at', $order)
+                            ->whereIn('cacaos.label', $status)
+                            ->paginate(6);
+        }
+
+        return response()->json([
+            'data' => $cacao,
+            'meta' => [
+                'current_page' => $cacao->currentPage(),
+                'total_pages' => $cacao->lastPage(),
+                'per_page' => $cacao->perPage(),
+                'total' => $cacao->total(),
+            ]
+        ], 200);
+
+    }
+    //Cacaos that the user uploaded
+    public function getCacaoUploadedByUser(string $order, string $filter, Request $request)
+    {
+        $status = ['Black Pod Rot', 'Frosty Pod Rot', 'Healthy Pod'];
+        switch(strtoupper($filter)){
+            case 'HEALTHY': $status = ['Healthy Pod'];
+            break;
+            case 'DISEASED': $status = ['Black Pod Rot', 'Frosty Pod Rot'];
+            break;
+            default : ['Black Pod Rot', 'Frosty Pod Rot', 'Healthy Pod'];
+        }
+
+        if($request->username){
+            $cacao = Cacao::select('cacaos.*', 'users.username', 'users.profile', 'users.city', 'users.barangay')
+                            ->join('users', 'users.uuid', '=', 'cacaos.uploaderId')
+                            ->orderBy('cacaos.created_at', $order)
+                            ->whereIn('cacaos.label', $status)
+                            ->where('users.username', $request->username)
+                            ->paginate(6);
+        }else{
+            $cacao = Cacao::select('cacaos.*', 'users.username', 'users.profile', 'users.city', 'users.barangay')
+                            ->join('users', 'users.uuid', '=', 'cacaos.uploaderId')
                             ->orderBy('cacaos.created_at', $order)
                             ->whereIn('cacaos.label', $status)
                             ->paginate(6);
@@ -94,7 +132,7 @@ class CacaoController
     //Get the highest count of disease within this week
     public function getHighestDiseaseWithinTheWeek(){
         $cacaoStats = Cacao::selectRaw('cacaos.label, users.city, COUNT(*) as count')
-                ->join('users', 'users.id', '=', 'cacaos.uploaderId')
+                ->join('users', 'users.uuid', '=', 'cacaos.uploaderId')
                 ->where('cacaos.created_at', '>=', now()->subDays(7))
                 ->where('cacaos.label', '!=', 'Healthy Pod')
                 ->groupBy('cacaos.label', 'users.city')
@@ -123,7 +161,7 @@ class CacaoController
     //getRecentPodScans
     public function getRecent(){
         $cacao = Cacao::select('cacaos.*', 'users.username', 'users.profile', 'users.city', 'users.barangay')
-                    ->join('users', 'users.id', '=', 'cacaos.uploaderId')
+                    ->join('users', 'users.uuid', '=', 'cacaos.uploaderId')
                     ->latest('cacaos.created_at')
                     ->limit(3)
                     ->get();
@@ -163,7 +201,7 @@ class CacaoController
             default : ['Black Pod Rot', 'Frosty Pod Rot'];
         }
         $cacao = DB::table('cacaos')
-                    ->join('users', 'users.id', '=', 'cacaos.uploaderId')
+                    ->join('users', 'users.uuid', '=', 'cacaos.uploaderId')
                     ->whereIn('label', $status)
                     ->groupBy('users.barangay', 'users.city')
                     ->select('users.barangay', 'users.city', DB::raw('COUNT(*) as count'))
