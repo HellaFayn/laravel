@@ -6,6 +6,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\UserStoreRequest;
 use App\Mail\VerificationEmail;
 use App\Models\EmailVerification;
+use App\Models\PersonalAccessToken;
 use App\Models\User;
 use Hash;
 use Illuminate\Http\Request;
@@ -56,25 +57,25 @@ class AuthController
         return redirect()->to('https://cacao-care.nuxt.dev/verify-failed');
     }
 
-    public function authLogin(Request $request){
+    public function authLogin(Request $request)
+    {
         $request->validate([
-            'email' => 'required',
+            'email' => 'required|email',
             'password' => 'required'
         ]);
+
         $user = User::where('email', $request->email)->first();
 
-        if(!$user){
+        if (!$user) {
             return response()->json([
-                'message' => 'User not found',
+                'message' => 'User  not found',
                 'errors' => [
                     'email' => 'This email is not registered'
                 ]
             ], 404);
         }
 
-        $mismatchPassword = !Hash::check($request->password, $user->password);
-
-        if($mismatchPassword){
+        if (!Hash::check($request->password, $user->password)) {
             return response()->json([
                 'message' => 'Invalid Password',
                 'errors' => [
@@ -83,12 +84,11 @@ class AuthController
             ], 400);
         }
 
-        $token = $user->createToken('auth-token')->plainTextToken;
+        $token = $user->createToken('auth-token', ['*'], Carbon::now()->addDays(30))->plainTextToken;
         return response()->json([
             'token' => $token,
             'data' => $user
         ], 200);
-
     }
 
     public function authLogout(Request $request){

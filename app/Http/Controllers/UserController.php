@@ -60,12 +60,29 @@ class UserController
         }
     }
 
-    public function getCurrentUser() {
+    public function getCurrentUser()
+    {
         $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        $token = $user->currentAccessToken();
+
+        if (!$token) {
+            return response()->json(['message' => 'Token not found'], 401);
+        }
+        if ($token->expired_at && $token->expired_at->isPast()) {
+            $token->delete();
+            return response()->json(['message' => 'Token expired, please login again'], 401);
+        }
+
         return response()->json([
-            'data' => $user
-        ],200);
+            'data' => $token
+        ], 200);
     }
+
 
     public function getUserCount(){
         $count = User::where('role', 'user')->count();
