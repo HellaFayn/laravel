@@ -79,7 +79,7 @@ class UserController
         }
 
         return response()->json([
-            'data' => $token
+            'data' => $user
         ], 200);
     }
 
