@@ -22,6 +22,7 @@ class UserUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'username' => 'sometimes|string',
             'password' => 'sometimes|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).+$/',
             'region' => 'sometimes|string',
             'province' => 'sometimes|string',

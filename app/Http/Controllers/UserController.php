@@ -99,9 +99,20 @@ class UserController
         ], 200);
     }
     //Update
-    public function update(UserUpdateRequest $request, User $user)
+    public function update(UserUpdateRequest $request, string $id)
     {
-
+        $user = User::find($id);
+        if ($request->username) {
+            $user->username = $request->username;
+        } if ($request->password) {
+            $user->password = Hash::make($request->password);
+        } if ($request->hasFile('profile')) {
+            $file = $request->file('profile');
+            $path = $file->store('profile-photos');
+            $user->profile = 'https://cacaocare.s3.ap-southeast-2.amazonaws.com/' . $path;
+        } // Save the updated user
+        $user->save();
+        return response()->json([ 'data' => $user ], 200);
     }
 
     //Delete
