@@ -77,17 +77,17 @@ class CacaoController
         $cacao = Cacao::select('cacaos.*', 'users.username', 'users.profile', 'users.city', 'users.barangay')
                         ->join('users', 'users.id', '=', 'cacaos.uploaderId')
                         ->where('users.id', $id)
-                        ->get();
+                        ->paginate(9);
 
 
         return response()->json([
             'data' => $cacao,
-            // 'meta' => [
-            //     'current_page' => $cacao->currentPage(),
-            //     'total_pages' => $cacao->lastPage(),
-            //     'per_page' => $cacao->perPage(),
-            //     'total' => $cacao->total(),
-            // ]
+            'meta' => [
+                'current_page' => $cacao->currentPage(),
+                'total_pages' => $cacao->lastPage(),
+                'per_page' => $cacao->perPage(),
+                'total' => $cacao->total(),
+            ]
         ], 200);
 
     }
