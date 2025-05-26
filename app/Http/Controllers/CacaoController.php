@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cacao;
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class CacaoController
 {
@@ -168,6 +169,28 @@ class CacaoController
                 'all' => $healthy + $diseased,
                 'healthy' => $healthy,
                 'diseased' => $diseased
+            ]
+        ],200);
+    }
+    //Get uploaded count by the user
+    public function getUploadCountByDate() {
+        $month = Carbon::now()->month;
+        $year = Carbon::now()->year;
+
+        $blackpodrot = Cacao::whereYear('created_at', '=', $year)
+                        ->whereMonth('created_at', '=', $month)
+                        ->where('label', 'Black Pod Rot')
+                        ->count();
+
+        $frostypodrot = Cacao::whereYear('created_at', '=', $year)
+                        ->whereMonth('created_at', '=', $month)
+                        ->where('label', 'Frosty Pod Rot')
+                        ->count();
+
+        return response()->json([
+            'data' => [
+                'blackpod' => $blackpodrot,
+                'frostypod' => $frostypodrot
             ]
         ],200);
     }
