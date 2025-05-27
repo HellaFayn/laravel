@@ -108,7 +108,8 @@ class UserController
             $user->password = Hash::make($request->password);
         } if ($request->hasFile('profile')) {
             $file = $request->file('profile');
-            $path = $file->store('profile-photos/'.$user->email);
+            $filename = $user->uuid.'_'.$file->getClientOriginalName();
+            $path = $file->storeAs('profile-photos/'.$user->email, $filename);
             $user->profile = 'https://cacaocare.s3.ap-southeast-2.amazonaws.com/' . $path;
         } // Save the updated user
         $user->save();
