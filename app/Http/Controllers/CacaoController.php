@@ -50,7 +50,7 @@ class CacaoController
                             ->join('users', 'users.id', '=', 'cacaos.uploaderId')
                             ->orderBy('cacaos.created_at', $order)
                             ->whereIn('cacaos.label', $status)
-                            ->where('users.username', $request->username)
+                            ->where('users.username', 'LIKE' , '%'.$request->username.'%' )
                             ->paginate(6);
         }else{
             $cacao = Cacao::select('cacaos.*', 'users.username', 'users.profile', 'users.city', 'users.barangay')
