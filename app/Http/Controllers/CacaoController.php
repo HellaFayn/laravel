@@ -212,7 +212,7 @@ class CacaoController
                 DB::raw("strftime('%Y-%W', created_at) as year_week")
             )
             ->whereIn('label', $status)
-            ->groupBy('uploaderId', DB::raw("strftime('%Y-%W', created_at)"));
+            ->groupBy('uploaderId', DB::raw("DATE_FORMAT('%Y-%W', created_at)"));
 
         $result = DB::table(DB::raw("({$subQuery->toSql()}) as weekly_uploads"))
             ->mergeBindings($subQuery)
