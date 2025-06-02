@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\UserStoreRequest;
 use App\Mail\VerificationEmail;
 use App\Models\EmailVerification;
-use App\Models\PersonalAccessToken;
 use App\Models\User;
 use Hash;
 use Illuminate\Http\Request;
@@ -25,11 +23,13 @@ class AuthController
         ],200);
     }
 
-    public function sendVerification(Request $request){
+    public function sendVerification(UserStoreRequest $request) {
         $token = Str::random(40);
-        $user = User::where('email', $request->email)->first();
-        $verification = EmailVerification::where('email', $request->email)->first();
-        if($user && !$verification){
+
+        $user = User::where('email', $request->email)->exists();
+        $verification = EmailVerification::where('email', $request->email)->exists();
+
+        if ($user && !$verification) {
             DB::table('email_verifications')->insert([
                 'email' => $request->email,
                 'token' => $token,
@@ -38,8 +38,9 @@ class AuthController
         }
 
         $url = url('/verify-email?token=' . $token);
-        Mail::to($request->email)->send(new VerificationEmail($url));
-        return response()->json(['data' => 'Verification email sent!'],200);
+        Mail::to($request->email)->queue(new VerificationEmail($url));
+
+        return response()->json(['data' => 'Verification email sent!'], 200);
     }
 
     public function verifyEmail(Request $request) {
