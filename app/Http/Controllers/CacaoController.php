@@ -209,7 +209,7 @@ class CacaoController
         $subQuery = DB::table('cacaos')
             ->select(
                 'uploaderId',
-                DB::raw("strftime('%Y-%W', created_at) as year_week")
+                DB::raw("DATE_FORMAT('%Y-%W', created_at) as year_week")
             )
             ->whereIn('label', $status)
             ->groupBy('uploaderId', DB::raw("DATE_FORMAT('%Y-%W', created_at)"));
