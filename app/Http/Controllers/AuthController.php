@@ -37,7 +37,7 @@ class AuthController
         ],200);
     }
 
-    public function sendVerification(UserStoreRequest $request) {
+    public function sendVerification(Request $request) {
         $token = Str::random(40);
         $user = User::where('email', $request->email)->exists();
         $verification = EmailVerification::where('email', $request->email)->exists();
