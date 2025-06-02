@@ -205,15 +205,31 @@ class CacaoController
             break;
             default : ['Black Pod Rot', 'Frosty Pod Rot'];
         }
-        $cacao = DB::table('cacaos')
-                    ->join('users', 'users.id', '=', 'cacaos.uploaderId')
-                    ->whereIn('label', $status)
-                    ->groupBy('users.barangay', 'users.city')
-                    ->select('users.barangay', 'users.city', DB::raw('COUNT(*) as count'))
-                    ->get();
+
+        $subQuery = DB::table('cacaos')
+            ->select(
+                'uploaderId',
+                DB::raw("strftime('%Y-%W', created_at) as year_week")
+            )
+            ->whereIn('label', $status)
+            ->groupBy('uploaderId', DB::raw("strftime('%Y-%W', created_at)"));
+
+        $result = DB::table(DB::raw("({$subQuery->toSql()}) as weekly_uploads"))
+            ->mergeBindings($subQuery)
+            ->join('users', 'users.id', '=', 'weekly_uploads.uploaderId')
+            ->groupBy('users.barangay')
+            ->select('users.city', 'users.barangay', DB::raw('COUNT(*) as count'))
+            ->get();
+
+        $totalCount = DB::table(DB::raw("({$subQuery->toSql()}) as weekly_uploads"))
+            ->mergeBindings($subQuery)
+            ->count();
 
         return response()->json([
-            'data' => $cacao
+            'data' => [
+                'uploaded' => $result,
+                'total' => $totalCount
+            ]
         ], 200);
     }
 
