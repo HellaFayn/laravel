@@ -39,16 +39,14 @@ class AuthController
 
     public function sendVerification(Request $request) {
         $token = Str::random(40);
-        $user = User::where('email', $request->email)->exists();
-        $verification = EmailVerification::where('email', $request->email)->exists();
 
-        if ($user && !$verification) {
-            DB::table('email_verifications')->insert([
-                'email' => $request->email,
+        DB::table('email_verifications')->updateOrInsert(
+            ['email' => $request->email], // Lookup condition
+            [
                 'token' => $token,
-                'created_at' => now(),
-            ]);
-        }
+                'created_at' => now()
+            ]
+        );
 
         $url = url('/verify-email?token=' . $token);
         Mail::to($request->email)->send(new VerificationEmail($url));
