@@ -19,6 +19,12 @@ class AuthController
         $token = Str::random(40);
         UserController::store($request);
 
+        DB::table('email_verifications')->insert([
+            'email' => $request->email,
+            'token' => $token,
+            'created_at' => now(),
+        ]);
+
         $url = url('/verify-email?token=' . $token);
         Mail::to($request->email)->send(new VerificationEmail($url));
         return response()->json([
