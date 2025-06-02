@@ -81,11 +81,11 @@
     <div class="email-container">
         <div class="logo">
             <!-- Replace with your logo -->
-            <img src="../../assets/cacao_care_logo1.jpg" alt="CacaoCare Logo">
+            <img src="{{ asset('images/cacao_care_logo1.jpg')}}" alt="CacaoCare Logo">
         </div>
         <h1>Verify your email</h1>
         <p>Welcome to CacaoCare! Click the button below to confirm your email address and activate your account.</p>
-        <a href="{{ $url }}" class="btn">Verify Email</a>
+        <button href="{{ $url }}" class="btn">Verify Email</button>
 
         <div class="alt-link">
             If the button above doesn't work, copy and paste this link into your browser:
