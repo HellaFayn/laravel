@@ -209,21 +209,22 @@ class CacaoController
         $subQuery = DB::table('cacaos')
             ->select(
                 'uploaderId',
-                DB::raw("DATE_FORMAT('%Y-%W', created_at) as year_week")
+                DB::raw("DATE_FORMAT(created_at, '%Y-%v') as year_week")
             )
             ->whereIn('label', $status)
-            ->groupBy('uploaderId', DB::raw("DATE_FORMAT('%Y-%W', created_at)"));
+            ->groupBy('uploaderId', DB::raw("DATE_FORMAT(created_at, '%Y-%v')"));
 
         $result = DB::table(DB::raw("({$subQuery->toSql()}) as weekly_uploads"))
             ->mergeBindings($subQuery)
             ->join('users', 'users.id', '=', 'weekly_uploads.uploaderId')
-            ->groupBy('users.barangay')
             ->select('users.city', 'users.barangay', DB::raw('COUNT(*) as count'))
+            ->groupBy('users.city', 'users.barangay')  // add city here too
             ->get();
 
         $totalCount = DB::table(DB::raw("({$subQuery->toSql()}) as weekly_uploads"))
             ->mergeBindings($subQuery)
             ->count();
+
 
         return response()->json([
             'data' => [
