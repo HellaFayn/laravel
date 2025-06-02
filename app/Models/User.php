@@ -27,6 +27,7 @@ class User extends Model
         'province',
         'city',
         'barangay',
+        'farm_name',
         'role'
     ];
 

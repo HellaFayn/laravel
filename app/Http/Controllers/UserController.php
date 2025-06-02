@@ -24,6 +24,7 @@ class UserController
         $user->province = $request->province;
         $user->city = $request->city;
         $user->barangay = $request->barangay;
+        $user->farm_name = $request->farm_name;
         $user->role = 'user';
 
         $user->save();
