@@ -60,6 +60,7 @@
         .alt-link {
             margin-top: 30px;
             text-align: center;
+            color: #f9fafb;
             font-size: 14px;
             color: #6b7280;
         }
@@ -85,7 +86,7 @@
         </div>
         <h1>Verify your email</h1>
         <p>Welcome to CacaoCare! Click the button below to confirm your email address and activate your account.</p>
-        <button href="{{ $url }}" class="btn">Verify Email</button>
+        <a href="{{ $url }}" class="btn">Verify Email</a>
 
         <div class="alt-link">
             If the button above doesn't work, copy and paste this link into your browser:
