@@ -22,4 +22,8 @@ class Cacao extends Model
         'caption',
         'date_analyzed'
     ];
+
+    public function user(){
+        return $this->belongsTo(User::class, 'id');
+    }
 }
