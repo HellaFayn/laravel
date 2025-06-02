@@ -16,8 +16,11 @@ use Illuminate\Support\Str;
 class AuthController
 {
     public function register(UserStoreRequest $request) {
+        $token = Str::random(40);
         UserController::store($request);
-        $this->sendVerification($request);
+
+        $url = url('/verify-email?token=' . $token);
+        Mail::to($request->email)->send(new VerificationEmail($url));
         return response()->json([
             'message' => 'Verification Send'
         ],200);
@@ -25,7 +28,6 @@ class AuthController
 
     public function sendVerification(UserStoreRequest $request) {
         $token = Str::random(40);
-
         $user = User::where('email', $request->email)->exists();
         $verification = EmailVerification::where('email', $request->email)->exists();
 
@@ -38,7 +40,7 @@ class AuthController
         }
 
         $url = url('/verify-email?token=' . $token);
-        Mail::to($request->email)->queue(new VerificationEmail($url));
+        Mail::to($request->email)->send(new VerificationEmail($url));
 
         return response()->json(['data' => 'Verification email sent!'], 200);
     }
