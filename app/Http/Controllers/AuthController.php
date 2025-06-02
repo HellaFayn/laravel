@@ -6,6 +6,7 @@ use App\Http\Requests\UserStoreRequest;
 use App\Mail\VerificationEmail;
 use App\Models\EmailVerification;
 use App\Models\User;
+use Exception;
 use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -19,11 +20,15 @@ class AuthController
         $token = Str::random(40);
         UserController::store($request);
 
-        DB::table('email_verifications')->insert([
-            'email' => $request->email,
-            'token' => $token,
-            'created_at' => now(),
-        ]);
+        try{
+            DB::table('email_verifications')->insert([
+                'email' => $request->email,
+                'token' => $token,
+                'created_at' => now(),
+            ]);
+        }catch(Exception $e){
+            return redirect()->to('https://cacao-care.nuxt.dev/email-verified');
+        }
 
         $url = url('/verify-email?token=' . $token);
         Mail::to($request->email)->send(new VerificationEmail($url));
