@@ -177,20 +177,18 @@ class CacaoController
         $month = Carbon::now()->month;
         $year = Carbon::now()->year;
 
-        $blackpodrot = Cacao::whereYear('created_at', '=', $year)
-                        ->whereMonth('created_at', '=', $month)
-                        ->where('label', 'Black Pod Rot')
-                        ->count();
+        $baseQuery = Cacao::whereYear('created_at', '=', $year)
+            ->whereMonth('created_at', '=', $month);
 
-        $frostypodrot = Cacao::whereYear('created_at', '=', $year)
-                        ->whereMonth('created_at', '=', $month)
-                        ->where('label', 'Frosty Pod Rot')
-                        ->count();
+        $blackpodrot = (clone $baseQuery)->where('label', 'Black Pod Rot')->count();
+        $frostypodrot = (clone $baseQuery)->where('label', 'Frosty Pod Rot')->count();
+        $total = (clone $baseQuery)->count();
 
         return response()->json([
             'data' => [
                 'blackpod' => $blackpodrot,
-                'frostypod' => $frostypodrot
+                'frostypod' => $frostypodrot,
+                'total' => $total
             ]
         ],200);
     }
