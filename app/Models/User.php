@@ -27,7 +27,8 @@ class User extends Model
         'province',
         'city',
         'barangay',
-        'role'
+        'role',
+        'email_verified_at'
     ];
 
     public function cacaos(){

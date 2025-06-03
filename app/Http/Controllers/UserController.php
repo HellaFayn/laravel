@@ -6,6 +6,7 @@ use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Requests\UsreStoreRequest;
 use App\Models\User;
+use Carbon\Carbon;
 use Date;
 use Hash;
 use Illuminate\Support\Facades\DB;
@@ -115,6 +116,16 @@ class UserController
         } // Save the updated user
         $user->save();
         return response()->json([ 'data' => $user ], 200);
+    }
+
+    public function updateUserVerification(string $id){
+        $user = User::find($id);
+        if($user->email_verified_at){
+            $user->email_verified_at = null;
+        }else{
+            $user->email_verified_at = Carbon::now();
+        }
+        return response()->json(['data' => $user], 200);
     }
 
     //Delete

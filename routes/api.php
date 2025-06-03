@@ -27,6 +27,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
     Route::get('current/user', [UserController::class, 'getCurrentUser']);
     Route::get('user/count/all', [UserController::class, 'getUserCount']);
     Route::get('user/count/today', [UserController::class, 'getUserSignToday']);
+    Route::put('user/update/verified/{user}', [UserController::class, 'updateUserVerification']);
 
     //DownloadLinks
     Route::get('download/latest/date', [DownloadLinksController::class, 'getLatestDate']);
