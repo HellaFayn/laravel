@@ -125,6 +125,7 @@ class UserController
         }else{
             $user->email_verified_at = Carbon::now();
         }
+        $user->save();
         return response()->json(['data' => $user], 200);
     }
 
