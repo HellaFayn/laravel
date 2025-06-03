@@ -214,7 +214,7 @@ class CacaoController
             ->whereIn('label', $status)
             ->whereYear('cacaos.created_at', $date[0])
             ->whereMonth('cacaos.created_at', $date[1])
-            ->groupBy('uploaderId', DB::raw("strftime(created_at, '%Y-%v')"));
+            ->groupBy('uploaderId', DB::raw("DATE_FORMAT(created_at, '%Y-%v')"));
 
         $result = DB::table(DB::raw("({$subQuery->toSql()}) as cacaos"))
             ->mergeBindings($subQuery)
