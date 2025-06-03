@@ -23,7 +23,6 @@ return new class extends Migration
             $table->string('province');
             $table->string('city');
             $table->string('barangay');
-            $table->string('farm_name')->nullable();
             $table->enum('role', ['admin', 'user']);
             $table->rememberToken();
             $table->timestamps();

@@ -29,7 +29,6 @@ class UserStoreRequest extends FormRequest
             'region' => 'sometimes|string',
             'province' => 'sometimes|string',
             'city' => 'sometimes|string',
-            'farm_name' => 'sometimes|string'
         ];
     }
 }
