@@ -196,7 +196,8 @@ class CacaoController
     }
 
     //Get Heatmap Data
-    public function getHeatMapData(string $filter){
+    public function getHeatMapData(string $filter, string $date){
+        $date = explode('-', $date);
         $status = ['Black Pod Rot', 'Frosty Pod Rot'];
         switch(strtoupper($filter)){
             case 'BLACK POD ROT': $status = ['Black Pod Rot'];
@@ -208,17 +209,18 @@ class CacaoController
 
         $subQuery = DB::table('cacaos')
             ->select(
-                'uploaderId',
-                DB::raw("DATE_FORMAT(created_at, '%Y-%v') as year_week")
+                'uploaderId', 'created_at'
             )
             ->whereIn('label', $status)
-            ->groupBy('uploaderId', DB::raw("DATE_FORMAT(created_at, '%Y-%v')"));
+            ->whereYear('cacaos.created_at', $date[0])
+            ->whereMonth('cacaos.created_at', $date[1])
+            ->groupBy('uploaderId', DB::raw("strftime(created_at, '%Y-%v')"));
 
-        $result = DB::table(DB::raw("({$subQuery->toSql()}) as weekly_uploads"))
+        $result = DB::table(DB::raw("({$subQuery->toSql()}) as cacaos"))
             ->mergeBindings($subQuery)
-            ->join('users', 'users.id', '=', 'weekly_uploads.uploaderId')
-            ->select('users.city', 'users.barangay', DB::raw('COUNT(*) as count'))
-            ->groupBy('users.city', 'users.barangay')  // add city here too
+            ->join('users', 'users.id', '=', 'cacaos.uploaderId')
+            ->select('users.city', 'users.barangay', 'users.region', DB::raw('COUNT(*) as count'))
+            ->groupBy('users.city', 'users.barangay', 'users.region')
             ->get();
 
         $totalCount = DB::table(DB::raw("({$subQuery->toSql()}) as weekly_uploads"))
